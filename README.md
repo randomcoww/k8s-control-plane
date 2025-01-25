@@ -1,4 +1,4 @@
-### Containers for Kubernetes control plane components
+### Container for Kubernetes control plane components
 
 https://github.com/kubernetes/kubernetes
 

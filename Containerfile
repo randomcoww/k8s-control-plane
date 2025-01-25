@@ -19,4 +19,6 @@ RUN set -x \
 
 FROM scratch
 
-COPY --from=BUILD /go/src/kubernetes/_output/bin/ /usr/local/bin
+COPY --from=BUILD /go/src/kubernetes/_output/bin/kube-apiserver /usr/local/bin/
+COPY --from=BUILD /go/src/kubernetes/_output/bin/kube-controller-manager /usr/local/bin/
+COPY --from=BUILD /go/src/kubernetes/_output/bin/kube-scheduler /usr/local/bin/
