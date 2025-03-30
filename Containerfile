@@ -1,5 +1,5 @@
 FROM golang:alpine as BUILD
-ARG VERSION=v1.32.1
+ARG VERSION=v1.32.3
 
 WORKDIR /go/src
 RUN set -x \
