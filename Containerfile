@@ -1,5 +1,5 @@
 FROM golang:alpine as BUILD
-ARG VERSION=v1.32.3
+ARG VERSION
 
 WORKDIR /go/src
 RUN set -x \
@@ -15,10 +15,23 @@ RUN set -x \
   && make \
     kube-apiserver \
     kube-controller-manager \
-    kube-scheduler
+    kube-scheduler \
+    kube-proxy
 
-FROM scratch
+FROM scratch AS control_plane
 
 COPY --from=BUILD /go/src/kubernetes/_output/bin/kube-apiserver /usr/local/bin/
 COPY --from=BUILD /go/src/kubernetes/_output/bin/kube-controller-manager /usr/local/bin/
 COPY --from=BUILD /go/src/kubernetes/_output/bin/kube-scheduler /usr/local/bin/
+
+FROM alpine:edge AS kube_proxy
+
+COPY --from=BUILD /go/src/kubernetes/_output/bin/kube-proxy /usr/local/bin/
+RUN set -x \
+  \
+  && apk add --no-cache \
+    conntrack-tools \
+    nftables \
+    iptables \
+    ipset \
+    kmod

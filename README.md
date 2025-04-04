@@ -5,6 +5,7 @@ https://github.com/kubernetes/kubernetes
 - API server
 - Controller manager
 - Scheduler
+- Kube proxy
 
 Latest release
 
