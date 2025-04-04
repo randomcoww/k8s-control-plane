@@ -4,9 +4,13 @@
 
 name: Image Build
 on:
+  workflow_dispatch:
   push:
-    tags:
-    - v*
+    paths-ignore:
+    - .github/**
+    - README.md
+    branches:
+    - master
 
 jobs:
   build:
@@ -29,10 +33,10 @@ jobs:
         }
         EOF
 
+        VERSION=$(wget -O - https://api.github.com/repos/kubernetes/kubernetes/releases/latest |grep tag_name | cut -d '"' -f 4)
         /kaniko/executor \
           --dockerfile="./Containerfile" \
           --context="${{ github.repositoryUrl }}#${{ github.ref }}#${{ github.sha }}" \
-          --destination="ghcr.io/${{ github.repository }}:${{ github.head_ref || github.ref_name }}" \
-          --build-arg VERSION=${{ github.head_ref || github.ref_name }} \
-          --target control_plane \
+          --destination="ghcr.io/${{ github.repository }}:$VERSION.$(date -u +'%Y%m%d.%H%M')" \
+          --build-arg VERSION=$VERSION \
           --push-retry 3
