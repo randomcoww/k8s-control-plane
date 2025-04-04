@@ -23,7 +23,8 @@ jobs:
     steps:
     - name: Set tag
       run: |
-        echo TAG=$(wget -O - https://api.github.com/repos/kubernetes/kubernetes/releases/latest |grep tag_name | cut -d '"' -f 4).$(date -u +'%Y%m%d.%H%M') | tee -a "$GITHUB_ENV"
+        echo VERSION=$(wget -O - https://api.github.com/repos/kubernetes/kubernetes/releases/latest |grep tag_name | cut -d '"' -f 4) | tee -a "$GITHUB_ENV"
+        echo TAG=$(date -u +'%Y%m%d.%H%M') | tee -a "$GITHUB_ENV"
 
     - name: Build and release container
       run: |
@@ -40,5 +41,5 @@ jobs:
         /kaniko/executor \
           --dockerfile="./Containerfile" \
           --context="${{ github.repositoryUrl }}#${{ github.ref }}#${{ github.sha }}" \
-          --destination="ghcr.io/${{ github.repository }}:$TAG" \
+          --destination="ghcr.io/${{ github.repository }}:$VERSION.$TAG" \
           --push-retry 3
