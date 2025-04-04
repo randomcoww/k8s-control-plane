@@ -21,6 +21,10 @@ jobs:
       contents: read
       packages: write
     steps:
+    - name: Set tag
+      run: |
+        echo TAG=$(wget -O - https://api.github.com/repos/kubernetes/kubernetes/releases/latest |grep tag_name | cut -d '"' -f 4).$(date -u +'%Y%m%d.%H%M') | sudo tee -a "$GITHUB_ENV"
+
     - name: Build and release container
       run: |
         cat > $DOCKER_CONFIG/config.json <<EOF
@@ -33,10 +37,8 @@ jobs:
         }
         EOF
 
-        VERSION=$(wget -O - https://api.github.com/repos/kubernetes/kubernetes/releases/latest |grep tag_name | cut -d '"' -f 4)
         /kaniko/executor \
           --dockerfile="./Containerfile" \
           --context="${{ github.repositoryUrl }}#${{ github.ref }}#${{ github.sha }}" \
-          --destination="ghcr.io/${{ github.repository }}:$VERSION.$(date -u +'%Y%m%d.%H%M')" \
-          --build-arg VERSION=$VERSION \
+          --destination="ghcr.io/${{ github.repository }}:$TAG" \
           --push-retry 3
