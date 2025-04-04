@@ -1,4 +1,5 @@
 FROM golang:alpine as BUILD
+ARG VERSION
 
 WORKDIR /go/src
 RUN set -x \
@@ -9,8 +10,8 @@ RUN set -x \
     bash \
     rsync \
   \
-  && VERSION=$(wget -O - https://api.github.com/repos/kubernetes/kubernetes/releases/latest |grep tag_name | cut -d '"' -f 4) \
-  && git clone --depth 1 -b $VERSION https://github.com/kubernetes/kubernetes.git \
+  # && VERSION=$(wget -O - https://api.github.com/repos/kubernetes/kubernetes/releases/latest |grep tag_name | cut -d '"' -f 4 | tr -d 'v') \
+  && git clone --depth 1 -b v$VERSION https://github.com/kubernetes/kubernetes.git \
   && cd kubernetes \
   && make \
     kube-apiserver \
